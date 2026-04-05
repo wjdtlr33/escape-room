@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미션: 봉인된 진실</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .er-wrap {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+    }
+
+    .er-stage { display: none; }
+    .er-stage.active { display: block; }
+
+    .er-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .er-icon { font-size: 44px; margin-bottom: 0.5rem; }
+
+    .er-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0 0 4px;
+    }
+
+    .er-sub {
+      font-size: 13px;
+      color: #888;
+      margin: 0;
+    }
+
+    .er-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .er-question {
+      font-size: 15px;
+      color: #1a1a1a;
+      line-height: 1.7;
+      margin: 0 0 1rem;
+    }
+
+    .er-hint {
+      font-size: 12px;
+      color: #888;
+      background: #f5f5f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 1rem;
+    }
+
+    .er-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .er-input {
+      flex: 1;
+      padding: 12px;
+      font-size: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+      color: #1a1a1a;
+      letter-spacing: 6px;
+      text-align: center;
+    }
+
+    .er-input:focus {
+      outline: none;
+      border-color: #185FA5;
+    }
+
+    .er-btn {
+      padding: 12px 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: transparent;
+      color: #1a1a1a;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .er-btn:hover { background: #f5f5f5; }
+
+    .er-btn.primary {
+      background: #185FA5;
+      color: #fff;
+      border-color: #185FA5;
+    }
+
+    .er-btn.primary:hover { background: #0C447C; }
+
+    .er-btn.full {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 14px;
+      font-size: 16px;
+    }
+
+    .er-msg {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .er-msg.error {
+      background: #FCEBEB;
+      color: #A32D2D;
+      display: block;
+    }
+
+    .er-msg.success {
+      background: #EAF3DE;
+      color: #3B6D11;
+      display: block;
+    }
+
+    .er-clue {
+      background: #f0f6ff;
+      border-left: 3px solid #185FA5;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #1a1a1a;
+      line-height: 1.6;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+      display: none;
+    }
+
+    .er-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 0.75rem;
+    }
+
+    .er-badge.step1 { background: #E6F1FB; color: #0C447C; }
+    .er-badge.step2 { background: #EAF3DE; color: #27500A; }
+    .er-badge.step3 { background: #EEEDFE; color: #3C3489; }
+
+    .er-progress {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .er-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e5e5e5;
+    }
+
+    .er-dot.done { background: #185FA5; }
+    .er-dot.active { background: #B5D4F4; border: 2px solid #185FA5; }
+
+    .er-timer {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .er-timer span {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .er-final {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .er-final-icon { font-size: 52px; margin-bottom: 1rem; }
+
+    .er-final-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0 0 8px;
+    }
+
+    .er-final-msg {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    .er-clear-box {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: #f5f5f0;
+      border-radius: 16px;
+    }
+
+    .er-clear-label {
+      font-size: 12px;
+      color: #888;
+      margin: 0 0 6px;
+    }
+
+    .er-clear-code {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      color: #1a1a1a;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="er-wrap">
+
+  <!-- 인트로 -->
+  <div class="er-stage active" id="stage-intro">
+    <div class="er-header">
+      <div class="er-icon">🔒</div>
+      <p class="er-title">미션: 봉인된 진실</p>
+      <p class="er-sub">3개의 자물쇠를 모두 열어라</p>
+    </div>
+    <div class="er-card">
+      <p class="er-question">
+        너희에게 주어진 미션은 단 하나.<br>
+        봉인된 진실의 상자를 열어라.<br><br>
+        현장 곳곳에 숨겨진 단서를 찾고,<br>
+        암호를 풀어야 한다.<br><br>
+        준비됐다면 시작하라.
+      </p>
+    </div>
+    <button class="er-btn primary full" onclick="startGame()">미션 시작 →</button>
+  </div>
+
+  <!-- 1단계 -->
+  <div class="er-stage" id="stage-1">
+    <div class="er-progress">
+      <div class="er-dot active"></div>
+      <div class="er-dot"></div>
+      <div class="er-dot"></div>
+    </div>
+    <div class="er-timer">경과 시간: <span id="timer1">00:00</span></div>
+    <div class="er-header">
+      <div class="er-icon">🕐</div>
+      <p class="er-title">첫 번째 자물쇠</p>
+    </div>
+    <div class="er-card">
+      <span class="er-badge step1">4자리 숫자 암호</span>
+      <p class="er-question">
+        구세주가 이 땅에 오신 날.<br>
+        온 세상이 기다리던 그 날은 언제인가?
+      </p>
+      <div class="er-hint">💡 힌트: 12월의 어느 날, 전 세계가 함께 축하하는 날</div>
+      <div class="er-input-row">
+        <input class="er-input" id="ans1" type="tel" maxlength="4" placeholder="_ _ _ _">
+        <button class="er-btn primary" onclick="check1()">확인</button>
+      </div>
+      <div class="er-msg" id="msg1"></div>
+      <div class="er-clue" id="clue1">
+        🔓 첫 번째 자물쇠 해제!<br><br>
+        상자 안 쪽지를 확인하라.<br>
+        쪽지에 적힌 숫자가 다음 단서다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2단계 -->
+  <div class="er-stage" id="stage-2">
+    <div class="er-progress">
+      <div class="er-dot done"></div>
+      <div class="er-dot active"></div>
+      <div class="er-dot"></div>
+    </div>
+    <div class="er-timer">경과 시간: <span id="timer2">00:00</span></div>
+    <div class="er-header">
+      <div class="er-icon">📖</div>
+      <p class="er-title">두 번째 자물쇠</p>
+    </div>
+    <div class="er-card">
+      <span class="er-badge step2">4자리 숫자 암호</span>
+      <p class="er-question">
+        예수님이 공생애를 시작하신 나이는?<br>
+        그 숫자를 두 번 이어서 써라.
+      </p>
+      <div class="er-hint">💡 힌트: 세례를 받으신 후 사역을 시작하셨다 (누가복음 3:23)</div>
+      <div class="er-input-row">
+        <input class="er-input" id="ans2" type="tel" maxlength="4" placeholder="_ _ _ _">
+        <button class="er-btn primary" onclick="check2()">확인</button>
+      </div>
+      <div class="er-msg" id="msg2"></div>
+      <div class="er-clue" id="clue2">
+        🔓 두 번째 자물쇠 해제!<br><br>
+        강단 아래 빨간 봉투를 찾아라.<br>
+        마지막 암호가 거기 있다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3단계 -->
+  <div class="er-stage" id="stage-3">
+    <div class="er-progress">
+      <div class="er-dot done"></div>
+      <div class="er-dot done"></div>
+      <div class="er-dot active"></div>
+    </div>
+    <div class="er-timer">경과 시간: <span id="timer3">00:00</span></div>
+    <div class="er-header">
+      <div class="er-icon">👑</div>
+      <p class="er-title">마지막 자물쇠</p>
+    </div>
+    <div class="er-card">
+      <span class="er-badge step3">4자리 숫자 암호</span>
+      <p class="er-question">
+        최후의 만찬에 모인 제자들의 수는?<br>
+        그 숫자를 반복해서 4자리를 만들어라.
+      </p>
+      <div class="er-hint">💡 힌트: 예수님과 함께한 열두 ○○</div>
+      <div class="er-input-row">
+        <input class="er-input" id="ans3" type="tel" maxlength="4" placeholder="_ _ _ _">
+        <button class="er-btn primary" onclick="check3()">확인</button>
+      </div>
+      <div class="er-msg" id="msg3"></div>
+    </div>
+  </div>
+
+  <!-- 클리어 -->
+  <div class="er-stage" id="stage-final">
+    <div class="er-final">
+      <div class="er-final-icon">🎉</div>
+      <p class="er-final-title">모든 자물쇠 해제 완료!</p>
+      <p class="er-final-msg">
+        축하해! 봉인된 진실의 상자가 열렸어.<br><br>
+        클리어 시간: <strong id="final-time">-</strong><br><br>
+        인솔자 선생님께 이 화면을 보여줘!
+      </p>
+      <div class="er-clear-box">
+        <p class="er-clear-label">클리어 코드</p>
+        <p class="er-clear-code">AMEN</p>
+      </div>
+      <button class="er-btn full" style="margin-top: 1.5rem;" onclick="resetGame()">처음으로 돌아가기</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let startTime = null;
+  let timerInterval = null;
+
+  function startGame() {
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimers, 1000);
+    showStage('stage-1');
+  }
+
+  function getElapsed() {
+    if (!startTime) return '00:00';
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    return m + ':' + s;
+  }
+
+  function updateTimers() {
+    const t = getElapsed();
+    ['timer1', 'timer2', 'timer3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = t;
+    });
+  }
+
+  function showStage(id) {
+    document.querySelectorAll('.er-stage').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'er-msg ' + type;
+  }
+
+  function check1() {
+    const val = document.getElementById('ans1').value.trim();
+    if (val === '1225') {
+      showMsg('msg1', '정답! 첫 번째 자물쇠가 열렸다!', 'success');
+      document.getElementById('clue1').style.display = 'block';
+      setTimeout(() => showStage('stage-2'), 2000);
+    } else {
+      showMsg('msg1', '틀렸어! 다시 생각해봐.', 'error');
+      document.getElementById('ans1').value = '';
+    }
+  }
+
+  function check2() {
+    const val = document.getElementById('ans2').value.trim();
+    if (val === '3030') {
+      showMsg('msg2', '정답! 두 번째 자물쇠가 열렸다!', 'success');
+      document.getElementById('clue2').style.display = 'block';
+      setTimeout(() => showStage('stage-3'), 2000);
+    } else {
+      showMsg('msg2', '틀렸어! 다시 생각해봐.', 'error');
+      document.getElementById('ans2').value = '';
+    }
+  }
+
+  function check3() {
+    const val = document.getElementById('ans3').value.trim();
+    if (val === '1212') {
+      showMsg('msg3', '정답! 마지막 자물쇠가 열렸다!', 'success');
+      clearInterval(timerInterval);
+      const ft = getElapsed();
+      setTimeout(() => {
+        document.getElementById('final-time').textContent = ft;
+        showStage('stage-final');
+      }, 1500);
+    } else {
+      showMsg('msg3', '틀렸어! 다시 생각해봐.', 'error');
+      document.getElementById('ans3').value = '';
+    }
+  }
+
+  function resetGame() {
+    startTime = null;
+    clearInterval(timerInterval);
+    ['ans1', 'ans2', 'ans3'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('.er-msg').forEach(el => el.className = 'er-msg');
+    document.querySelectorAll('.er-clue').forEach(el => el.style.display = 'none');
+    showStage('stage-intro');
+  }
+</script>
+</body>
+</html>
